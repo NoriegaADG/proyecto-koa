@@ -1,7 +1,7 @@
-const Koa = require('koa')
-const app = new Koa()
+import Koa from 'koa'
+import {setFinalResponseMdw, setFinalResponseTimeMdw} from './middlewares.js'
 
-const { setFinalResponseMdw, setFinalResponseTimeMdw } = require('./middlewares')
+const app = new Koa()
 
 //Primer middleware
 app.use(setFinalResponseMdw)
