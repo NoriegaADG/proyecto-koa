@@ -1,18 +1,30 @@
 import Koa from 'koa'
-import {setFinalResponseMdw, setFinalResponseTimeMdw} from './middlewares.js'
+import Router from 'koa-router'
+import { setFinalResponseMdw, setFinalResponseTimeMdw } from './middlewares.js'
 
 const app = new Koa()
+const router = new Router()
 
-//Primer middleware
 app.use(setFinalResponseMdw)
-
-//Segundo middleware
 app.use(setFinalResponseTimeMdw)
 
-//Tercer middleware
-app.use(async ctx => {
-  console.log('Pasa 5')
-  ctx.body = 'Hola Mundo desde KOA';
+app.use(router.routes())
+app.use(router.allowedMethods())
+
+router.get('/user', (ctx, next) => {
+  ctx.body = 'Hola desde GET'
 })
 
-app.listen(3000, ()=> console.log('Server is running on http://localhost:3000'))
+router.post('/user', (ctx, next) => {
+  ctx.body = 'Hola desde POST'
+})
+
+router.put('/user', (ctx, next) => {
+  ctx.body = 'Hola desde PUT'
+})
+
+router.delete('/user', (ctx, next) => {
+  ctx.body = 'Hola desde DELETE'
+})
+
+app.listen(3000, () => console.log('Server is running on http://localhost:3000'))
