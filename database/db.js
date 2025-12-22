@@ -1,5 +1,8 @@
 import pkg from 'pg'
+import dotenv from 'dotenv'
 const { Pool } = pkg
+
+dotenv.config()
 
 let pool = null
 
@@ -10,7 +13,8 @@ export function getDatabaseInstance () {
       host: process.env.DB_HOST,
       database: process.env.DB_DATABASE,
       password: process.env.DB_PASSWORD,
-      port: Number(process.env.DB_PORT)
+      port: Number(process.env.DB_PORT),
+      ssl: { rejectUnauthorized: false }
     })
   }
   return pool
