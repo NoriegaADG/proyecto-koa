@@ -1,4 +1,3 @@
-import * as yup from 'yup'
 import { verifyToken } from './src/utils/tokenGenerator.js'
 
 export async function setFinalResponseMdw (ctx, next) {
@@ -57,21 +56,6 @@ export function bodyParserMdw () {
   }
 }
 
-const validationConfig = { abortEarly: true, stripUnknown: true }
-
-const schema = yup.object({
-  email: yup.string().trim().required().email(),
-  name: yup.string().trim().required(),
-  password: yup.string().trim().required()
-}).required()
-
-export async function validateUpdateUserMdw (ctx, next) {
-  const data = schema.validateSync(ctx.request.body, validationConfig)
-
-  ctx.request.body = data
-  await next()
-}
-
 // valideTokenMiddleware
 export const valideTokenMiddleware = async (ctx, next) => {
   const BEARER_START = 'Bearer '
@@ -98,4 +82,15 @@ export const valideTokenMiddleware = async (ctx, next) => {
     throw new Error('Error Parsing Token')
   }
   await next()
+}
+
+// Control de Errores
+export const errorCatcherMdw = async (ctx, next) => {
+  try {
+    await next()
+  } catch (err) {
+    ctx.status = err?.cause?.code ?? 500
+    ctx.body = err?.message ?? 'unknown error'
+    ctx.app.emit('error', err, ctx)
+  }
 }

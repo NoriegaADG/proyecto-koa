@@ -1,10 +1,10 @@
 import Koa from 'koa'
 import 'dotenv/config'
-import { bodyParserMdw, setFinalResponseMdw, setFinalResponseTimeMdw } from './middlewares.js'
+import { bodyParserMdw, errorCatcherMdw, setFinalResponseMdw, setFinalResponseTimeMdw } from './middlewares.js'
 import userRouter from './src/userRouter.js'
 
 const app = new Koa()
-
+app.use(errorCatcherMdw)
 app.use(setFinalResponseMdw)
 app.use(setFinalResponseTimeMdw)
 app.use(bodyParserMdw())
