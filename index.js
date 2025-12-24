@@ -1,6 +1,6 @@
 import Koa from 'koa'
 import { bodyParserMdw, setFinalResponseMdw, setFinalResponseTimeMdw } from './middlewares.js'
-import userRouter from '.src/userRouter.js'
+import userRouter from './src/userRouter.js'
 
 const app = new Koa()
 

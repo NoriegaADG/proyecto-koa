@@ -1,4 +1,5 @@
-import { UserRepository } from './database/UserRepository.js'
+import { UserRepository } from '../database/UserRepository.js'
+import { hashPassword } from './utils/hashPassword.js'
 
 export const getAllUsers = async (ctx) => {
   const responseDB = await UserRepository.getUsers()
@@ -12,17 +13,18 @@ export const getUserById = async (ctx) => {
 }
 
 export const createUser = async (ctx) => {
+  console.log(ctx.request.body)
+  const { name, email, password } = ctx.request.body
+  const passwordHashed = await hashPassword(password)
+  const userSaved = await UserRepository.createUser({ name, email, password: passwordHashed })
+  ctx.body = { ok: true, userSaved }
+}
+
+export const updateUser = async (ctx) => {
   const id = ctx.params.id
   const { name, email, password } = ctx.request.body
   const userUpdated = await UserRepository.updateUser({ id, name, email, password })
   ctx.body = { ok: true, userUpdated }
-}
-
-export const updateUser = async (ctx) => {
-  console.log(ctx.request.body)
-  const { name, email, password } = ctx.request.body
-  const userSaved = await UserRepository.createUser(name, email, password)
-  ctx.body = { ok: true, userSaved }
 }
 
 export const deleteUser = async (ctx) => {
@@ -31,7 +33,7 @@ export const deleteUser = async (ctx) => {
   ctx.body = { ok: true, userDeleted }
 }
 
-export const userCtr = {
+export default {
   getAllUsers,
   getUserById,
   createUser,

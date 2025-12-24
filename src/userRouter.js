@@ -1,5 +1,5 @@
 import Router from 'koa-router'
-import { userCtr } from './src/userCtr.js'
+import userCtr from './userCtr.js'
 
 const router = new Router()
 
@@ -11,6 +11,6 @@ router.post('/user', userCtr.createUser)
 
 router.put('/user/:id', userCtr.updateUser)
 
-router.put('/user/:id', userCtr.deleteUser)
+router.delete('/user/:id', userCtr.deleteUser)
 
 export default router
