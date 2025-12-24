@@ -1,3 +1,6 @@
+import * as yup from 'yup'
+import { verifyToken } from './src/utils/tokenGenerator.js'
+
 export async function setFinalResponseMdw (ctx, next) {
   await next()
   const rt = ctx.response.get('X-Response-Time')
@@ -52,4 +55,47 @@ export function bodyParserMdw () {
     }
     await next()
   }
+}
+
+const validationConfig = { abortEarly: true, stripUnknown: true }
+
+const schema = yup.object({
+  email: yup.string().trim().required().email(),
+  name: yup.string().trim().required(),
+  password: yup.string().trim().required()
+}).required()
+
+export async function validateUpdateUserMdw (ctx, next) {
+  const data = schema.validateSync(ctx.request.body, validationConfig)
+
+  ctx.request.body = data
+  await next()
+}
+
+// valideTokenMiddleware
+export const valideTokenMiddleware = async (ctx, next) => {
+  const BEARER_START = 'Bearer '
+  const checkStringStartsWith = (str, start) => str.startsWith(start)
+
+  function checkTokenExists (token) {
+    if (!token) {
+      throw new Error('Token Not Found')
+    }
+
+    if (!checkStringStartsWith(token, BEARER_START)) {
+      throw new Error('Token Not Found')
+    }
+
+    const bearerJwt = token.split(BEARER_START)[1]
+    return bearerJwt
+  }
+
+  const token = checkTokenExists(ctx.headers.authorization)
+
+  try {
+    ctx.currentUser = await verifyToken(token)
+  } catch (error) {
+    throw new Error('Error Parsing Token')
+  }
+  await next()
 }
