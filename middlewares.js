@@ -58,30 +58,24 @@ export function bodyParserMdw () {
 
 // valideTokenMiddleware
 export const valideTokenMiddleware = async (ctx, next) => {
-  const BEARER_START = 'Bearer '
-  const checkStringStartsWith = (str, start) => str.startsWith(start)
+  const authHeader = ctx.headers.authorization
 
-  function checkTokenExists (token) {
-    if (!token) {
-      throw new Error('Token Not Found')
-    }
-
-    if (!checkStringStartsWith(token, BEARER_START)) {
-      throw new Error('Token Not Found')
-    }
-
-    const bearerJwt = token.split(BEARER_START)[1]
-    return bearerJwt
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    ctx.status = 401
+    ctx.body = { error: 'Token missing or invalid' }
+    return
   }
 
-  const token = checkTokenExists(ctx.headers.authorization)
+  // Extrae token sin espacios ni "Bearer "
+  const token = authHeader.slice(7)
 
   try {
     ctx.currentUser = await verifyToken(token)
+    await next()
   } catch (error) {
-    throw new Error('Error Parsing Token')
+    ctx.status = 401
+    ctx.body = { error: 'Invalid or expired token' }
   }
-  await next()
 }
 
 // Control de Errores
