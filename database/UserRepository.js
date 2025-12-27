@@ -14,9 +14,11 @@ async function getUserById (id) {
 }
 
 async function getUserByEmail (email) {
+  console.log('Buscando usuario por email:', email)
   const query = 'SELECT * FROM users WHERE email = $1'
   const params = [email]
   const res = await executeQuery(query, params)
+  console.log('Resultado de la query:', res)
   return res[0]
 }
 
