@@ -25,33 +25,22 @@ const queryStringToJson = queryString =>
 export function bodyParserMdw () {
   return async (ctx, next) => {
     if (ALLOWED_METHODS.has(ctx.request.method)) {
-      if (!ctx.request.headers['content-type']) {
-        ctx.request.headers['content-type'] = 'application/json'
-      }
-
       if (!ctx.req.rawBody) {
         ctx.req.rawBody = await new Promise((resolve, reject) => {
           let data = ''
-          ctx.req.on('data', chunk => {
-            data += chunk
-          })
-          ctx.req.on('end', () => {
-            resolve(data)
-          })
-          ctx.req.on('error', err => {
-            reject(err)
-          })
+          ctx.req.on('data', chunk => { data += chunk })
+          ctx.req.on('end', () => { resolve(data || '{}') }) // <- forzar '{}' si vacío
+          ctx.req.on('error', err => reject(err))
         })
       }
 
-      if (ctx.req.rawBody) {
-        try {
-          ctx.request.body = JSON.parse(ctx.req.rawBody)
-        } catch (err) {
-          ctx.request.body = queryStringToJson(String(ctx.req.rawBody))
-        }
+      try {
+        ctx.request.body = JSON.parse(ctx.req.rawBody)
+      } catch (err) {
+        ctx.request.body = queryStringToJson(String(ctx.req.rawBody) || '')
       }
     }
+    console.log('BODY PARSEADO:', ctx.request.body) // para depurar en Render
     await next()
   }
 }

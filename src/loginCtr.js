@@ -3,7 +3,10 @@ import { comparePassword } from './utils/hashPassword.js'
 import { createToken } from './utils/tokenGenerator.js'
 
 export const signIn = async (ctx) => {
-  const { email, password } = ctx.request.body
+  // Log para depuración en Render
+  console.log('BODY RECIBIDO:', ctx.request.body)
+
+  const { email, password } = ctx.request.body || {}
 
   if (!email || !password) {
     ctx.status = 400
