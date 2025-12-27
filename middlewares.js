@@ -15,7 +15,7 @@ export async function setFinalResponseTimeMdw (ctx, next) {
 
 // MID NEW
 
-const ALLOWED_METHODS = new Set(['POST', 'PUT', 'PATCH', 'DELETE'])
+/* const ALLOWED_METHODS = new Set(['POST', 'PUT', 'PATCH', 'DELETE'])
 
 const queryStringToJson = queryString =>
   Object.fromEntries(
@@ -43,7 +43,7 @@ export function bodyParserMdw () {
     console.log('BODY PARSEADO:', ctx.request.body) // para depurar en Render
     await next()
   }
-}
+} */
 
 // valideTokenMiddleware
 export const valideTokenMiddleware = async (ctx, next) => {
